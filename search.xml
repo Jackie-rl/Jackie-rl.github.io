@@ -32,4 +32,86 @@
         <tag>白话编程</tag>
       </tags>
   </entry>
+  <entry>
+    <title>给女朋友讲编程(3) -- 线程死锁</title>
+    <url>/2020/10/20/%E7%BB%99%E5%A5%B3%E6%9C%8B%E5%8F%8B%E8%AE%B2%E7%BC%96%E7%A8%8B(3)%20%E2%80%93%20%E7%BA%BF%E7%A8%8B%E6%AD%BB%E9%94%81/</url>
+    <content><![CDATA[<h1 id="给女朋友讲编程-3-–-线程死锁-你预测了我预测你的预测"><a href="#给女朋友讲编程-3-–-线程死锁-你预测了我预测你的预测" class="headerlink" title="给女朋友讲编程(3) – 线程死锁 (你预测了我预测你的预测)"></a>给女朋友讲编程(3) – 线程死锁 (你预测了我预测你的预测)</h1><hr>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>线程死锁是一个什么东西呢 ?</p>
+<p>要知道线程死锁之前, 我们需要先讲一下线程是一个什么东西 ?</p>
+<p>进程就是一个个的应用程序, 比如钉钉呐~ 微信呐~ 之类的, 线程就是一个个应用程序下的执行路径 !</p>
+<blockquote>
+<p>乐说=&gt;</p>
+<p>比如微信需要显示对方消息的同时, 还要接收我们打字, 这两个功能呢就需要占用两个线程来完成, 所以线程其实就可以把它当成公司里为了完成同一件事情而奋斗着的人们甲乙丙丁啦~</p>
+</blockquote>
+<br>
+
+<h2 id="起因"><a href="#起因" class="headerlink" title="起因"></a>起因</h2><p>那么有一天呢, 甲方一零和乙方阿乐, 诶~</p>
+<p>这两个憨憨线程之间似乎产生了一丝丝妙不可言的联系, 让我们来看看发生了什么叭~</p>
+<img src="https://handog.oss-cn-beijing.aliyuncs.com/img/006CXrEjly1geb05suhnhj30gl0glgoa.jpg" alt="006CXrEjly1geb05suhnhj30gl0glgoa" style="zoom:80%;" />
+
+<br>
+
+<h2 id="经过"><a href="#经过" class="headerlink" title="经过"></a>经过</h2><p>哦豁~ 原来是擦枪走火了呀~ 啊哈哈哈~</p>
+<p>两个人都是死要面子活受罪, 明明互相喜欢都憋着不说呢?</p>
+<p>(注: 一零阿乐为了保证线程安全, 都给自己加上了synchronized关键字 (保证线程安全的方式, 加锁))</p>
+<p>一零内心呢, 希望阿乐表白(zhuanzhang), 然后她就考虑考虑, 也迈出最后那一步~</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Yiling</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">heartOS</span><span class="params">(Ale le)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;一零内心os：你说出你爱我，我就做你女朋友&quot;</span>);</span><br><span class="line">        le.aleExpect();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">yilingExpect</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;一零透露出了我对你有好感, 阿乐向一零表白&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>阿乐内心呢也想知道一零对他的看法, 于是也想等她先透露透露内心的想法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Ale</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">heartOS</span><span class="params">(Yiling yiling)</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;阿乐内心os：你透露出你对我有好感，我就向你表白&quot;</span>);</span><br><span class="line">        yiling.yilingExpect();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">aleExpect</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;阿乐说出了我爱你，一零做了阿乐的女朋友&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果呢, 就发生了很多很多次的犹豫不决</p>
+<p>两个人都在互相猜测, 僵持在这了, 程序无法正常结束</p>
+<p>这就是<u><strong>线程死锁</strong></u>啦~</p>
+<img src="https://handog.oss-cn-beijing.aliyuncs.com/img/image-20201020103254201.png"/>
+
+
+
+<p>但僵持多了呢, 总有人僵持不住, 可能会先一步说出来, 于是……再僵持了十几次之后</p>
+<img src="https://handog.oss-cn-beijing.aliyuncs.com/img/v2-a466f3c4b8ee774d07e3803780fc5c50_720w.jpg"/>
+
+<p>阿乐终于憋不住了, 动作稍微快了一点, 突破了这层僵持 (线程没有锁住), 两个憨憨线程成功在一起啦~</p>
+<p>(当然, 也有可能是被胁迫的, 咳咳~)</p>
+<p><img src="https://handog.oss-cn-beijing.aliyuncs.com/img/image-20201020152818269.png" alt="image-20201020152818269"></p>
+<p>咋滴, 屏幕前的你们还希望我俩一直僵在这呀~</p>
+<p>哼哼, 不可能的, 我i7的处理器在我执行了个十几次之后总算是给了我个面子, 没能锁住我们, 一个不留神突破锁了</p>
+<p>所以, 最后的结果我俩在一起是不会变的~</p>
+<p>别馋我家一零了~</p>
+<img src="https://handog.oss-cn-beijing.aliyuncs.com/img/c854b0faad27dc1c8d30c73cc0c5f30.png" alt="c854b0faad27dc1c8d30c73cc0c5f30" style="zoom:150%;" />
+
+<br>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结:"></a>总结:</h2><p>所以呀, 我总结线程死锁就一句话:</p>
+<p><strong>你预测了我预测你的预测!!!</strong></p>
+<p>或者</p>
+<p><strong>犹豫就会败北~</strong></p>
+<p><strong><u>那么怎么解决线程死锁的问题呢</u></strong> ? </p>
+<p>=&gt; 在有可能产生锁的方法里不要再调用另一个方法让锁产生</p>
+<blockquote>
+<p>简单来说就是, 把阿乐的锁给拿掉, 大声说出来就完事儿啦~ 是男人你就说出来啊啊啊 !! (虽然如此, 阿乐怂的一批)</p>
+</blockquote>
+<br>
+
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>所以广大男同胞们, 不要僵持了啦, 身为男人总要先上的嘛~ 学完线程死锁就赶紧动起来叭~</p>
+<p>爱就要大胆说出来嘛~</p>
+<p>说不定对方也是这么想的哦~</p>
+<p>嘻嘻<del>祝你们成功</del></p>
+<img src="https://handog.oss-cn-beijing.aliyuncs.com/img/v2-dd271ad1604dc698798fbfea5cfa52d1_720w.jpg"/>
+
+<h2 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h2><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.java.demo44;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span>: Aleo阿乐</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span>: 2020/10/20</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@time</span>: 10:07</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test13</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//线程死锁</span></span><br><span class="line">        Yiling yi = <span class="keyword">new</span> Yiling();</span><br><span class="line">        Ale le = <span class="keyword">new</span> Ale();</span><br><span class="line">        <span class="keyword">new</span> MyThread(yi,le).start();</span><br><span class="line">        yi.heartOS(le);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyThread</span> <span class="keyword">extends</span> <span class="title">Thread</span></span>&#123;</span><br><span class="line">        <span class="keyword">private</span> Yiling yi;</span><br><span class="line">        <span class="keyword">private</span> Ale le;</span><br><span class="line">        MyThread(Yiling yi,Ale le)&#123;</span><br><span class="line">            <span class="keyword">this</span>.yi = yi;</span><br><span class="line">            <span class="keyword">this</span>.le = le;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            le.heartOS(yi);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Yiling</span></span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">heartOS</span><span class="params">(Ale le)</span></span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;一零内心os：你说出你爱我，我就做你女朋友&quot;</span>);</span><br><span class="line">            le.aleExpect();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">yilingExpect</span><span class="params">()</span></span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;一零透露出了我对你有好感, 阿乐向一零表白&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Ale</span></span>&#123;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">heartOS</span><span class="params">(Yiling yiling)</span></span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;阿乐内心os：你透露出你对我有好感，我就向你表白&quot;</span>);</span><br><span class="line">            yiling.yilingExpect();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">aleExpect</span><span class="params">()</span></span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;阿乐说出了我爱你，一零做了阿乐的女朋友&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>想看我俩僵持的请执行代码~</p>
+<p>想吃狗粮的请执行10次代码 </p>
+<p>我们总有一个线程会突破锁在一起哒~</p>
+</blockquote>
+<p>本篇纯属娱乐, 想正经学多线程的xdm请移步下方正经文链接~</p>
+<p><a href="https://blog.csdn.net/qq_41912032/article/details/109183589">Java - 多线程基础 (我写的呀!!)</a></p>
+]]></content>
+      <tags>
+        <tag>白话编程</tag>
+      </tags>
+  </entry>
 </search>
